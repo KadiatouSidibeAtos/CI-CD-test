@@ -35,7 +35,7 @@ export default {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  background-color: rgb(226, 226, 226);
+  background-color: #343541;
 }
 
 .sidebar {
