@@ -1,40 +1,62 @@
 <template>
 
-  <v-content class="containt">
     <v-container>
-      <v-row class="rows">
+      <v-row class="rows" align="center">
         <v-col cols="12" md="10" offset-md="2" class="cols">
-          <v-card  class="card-title">
-            <v-card-title >
-              ChatIDA
-            </v-card-title>
-
-          </v-card>
           <div v-if="isSend" class="reponse">
             <div v-for="(item, index) in chatHistory" :key="index">
-              <p class="p-message" v-if="item.isUser" >{{ item.message }}</p>
+              <v-row>
+                <v-col cols="1" style="margin-top: 10px;">
+                  <v-avatar color="#C2CBCD" v-if="item.isUser">
+                    <v-icon v-if="item.isUser" icon="mdi-account-circle"></v-icon>
+                  </v-avatar>
+                </v-col>
+                <v-col cols="11">
+                  <p class="p-message" v-if="item.isUser">{{ item.message }}</p>
+                </v-col>
+              </v-row>
 
-              <v-card class="card" v-if="!item.isUser && item.message.length != 0">
-                <v-card-text class="text-card">
-                  <p v-if="!item.isUser">{{ item.message }}</p>
-                </v-card-text>
-              </v-card>
+
+              <div v-if="!item.isUser && item.message.length != 0">
+                <v-row>
+                  <v-col cols="1" style="margin-top: 15px;">
+                    <v-avatar color="#C2CBCD" v-if="!item.isUser">
+                      <span class="text-h5">CB</span>
+                    </v-avatar>
+                  </v-col>
+                  <v-col cols="11">
+                    <v-card class="card">
+                      <v-card-text class="text-card">
+                        <p v-if="!item.isUser">{{ item.message }}</p>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+
+
+              </div>
+
+
             </div>
           </div>
 
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
 
-  <v-footer class="footer" app bottom fixed padless  v-bind:style="{ backgroundColor: '#343541' }">
+
+  <v-footer class="footer" app bottom fixed padless v-bind:style="{ backgroundColor: '#343541' }">
     <v-row align="center">
       <v-col cols="12">
-        <v-text-field class="text-field"  :loading="isRequest" v-model="message" label="Enter your message" variant="solo" append-inner-icon="mdi-send"
-          @keyup.enter="sendMessage"></v-text-field>
+        <v-text-field class="text-field" :loading="isRequest" v-model="message" label="Enter your message"
+          variant="solo" append-inner-icon="mdi-send" @keyup.enter="sendMessage"></v-text-field>
       </v-col>
     </v-row>
   </v-footer>
+
+
+
+
 
 </template>
 
@@ -59,18 +81,36 @@ export default {
       if (this.message.trim() === '') return
       this.chatHistory.push({ message: this.message, isUser: true })
       this.message = ''
-
-
     },
     async getResponse() {
       if (this.message) {
-        const { data } = await axios.post('http://localhost:4000/getResponse', { message: this.message });
-        this.chatHistory.push({ message: data.response, isUser: false });
+        const { data } = await axios.post('/api/getResponse', { message: this.message });
+        if(data.response){
+          this.chatHistory.push({ message: data.response, isUser: false });
+        }else{
+          this.chatHistory.push({ message: "Désolé, je n'ai pas bien compris votre question", isUser: false });
+        }
+        
         this.isRequest = false;
 
-      }
+      }      
 
-    }
+    },
+
+    // async saveConversation() {
+    //   if (this.chatHistory && this.chatHistory.length!=0) {
+    //     axios.post('/api/saveConversation', { chatHistory: this.chatHistory })
+    //     .then(response => {
+          
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+
+    //   }      
+
+    // },
+    
   }
 }
 </script>
@@ -80,7 +120,7 @@ export default {
   justify-content: center;
 }
 
-.card-title{
+.card-title {
   margin-right: 20%;
   margin-left: -25%;
   width: 20%;
@@ -94,15 +134,19 @@ export default {
 
 
 }
-.card{
+
+.card {
   margin-top: 20px;
-  background-color: #40414f;
-  width:  100%;
+  width: 100%;
 }
-.text-card{
-  background-color: #40414f;
+
+.text-card {
+  background-color: #343541;
   color: white;
+  border: 0px;
+ 
 }
+
 .p-message {
   margin-top: 20px;
   color: white;

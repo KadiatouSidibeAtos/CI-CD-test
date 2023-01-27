@@ -1,6 +1,9 @@
 <template>
   <v-app class="app">
-    <div class="global" >
+    <v-main v-if="!isLogged" style="background-color: black;">
+      <Login  @isLogged="changeLogStatus"/>
+    </v-main>
+    <div class="global" v-if="isLogged">
       <div class="sidebar">
         <Sidebar />
       </div>
@@ -15,17 +18,22 @@
 <script>
 import Homechat from './components/Home-chat.vue'
 import Sidebar from './components/Side-bar.vue'
+import Login from './components/Login.vue'
 export default {
   components: {
     Homechat,
-    Sidebar
+    Sidebar,
+    Login
   },
   data() {
     return {
+      isLogged:false
     }
   },
   methods: {
-
+    changeLogStatus(isLogged){
+      this.isLogged=isLogged;
+    }
   }
 }
 </script>
@@ -34,8 +42,7 @@ export default {
 .global {
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
-  background-color: #343541;
+  background-color: #40414f;
 }
 
 .sidebar {
