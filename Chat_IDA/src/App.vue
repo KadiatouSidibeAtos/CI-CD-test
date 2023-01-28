@@ -1,11 +1,11 @@
 <template>
-  <v-app class="app">
-    <v-main v-if="!isLogged" style="background-color: black;">
+  <v-app >
+    <v-main v-if="!isLogged" >
       <Login  @isLogged="changeLogStatus"/>
     </v-main>
-    <div class="global" v-if="isLogged">
+    <div class="global"  v-if="isLogged">
       <div class="sidebar">
-        <Sidebar />
+        <Sidebar @messages_test="getMessage" v-bind:isLogged="isLogged" />
       </div>
       <div class="homechat">
         <Homechat />
@@ -27,29 +27,19 @@ export default {
   },
   data() {
     return {
-      isLogged:false
+      isLogged:false,
+      messages_test: []
     }
   },
+ 
   methods: {
     changeLogStatus(isLogged){
       this.isLogged=isLogged;
-    }
+    },
+   
   }
 }
 </script>
 <style>
 
-.global {
-  flex: 1;
-  display: flex;
-  background-color: #40414f;
-}
-
-.sidebar {
-  flex: 25%;
-}
-
-.homechat {
-  flex: 75%;
-}
 </style>

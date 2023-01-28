@@ -71,7 +71,6 @@ export default {
         }else{
           this.loginFailed=true;
         }
-
       }
 
       catch (error) {

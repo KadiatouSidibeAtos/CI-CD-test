@@ -1,73 +1,86 @@
 <template>
-    <div class="side">
-        <v-card height="100%" width="30%">
-            <v-navigation-drawer permanent class="bg-color" style="background-color: #343541; color: white;">
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-title class="text-h6">
-                            ChatIDA
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                            Projet chatbot M2
-                        </v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
+    <v-card>
+        <v-layout>
+            <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
 
-                <v-divider></v-divider>
-                <div>
-                    <v-btn prepend-icon="mdi-plus" variant="outlined" class="conv" @click="dialog = true">
-                        Add Conversation
-                    </v-btn>
-                    <v-btn block class="conv" variant="text" prepend-icon="mdi-message">
-                        Conversation 1
-                    </v-btn>
-                    <v-btn block class="conv" variant="text" prepend-icon="mdi-message">
-                        Conversation 2
-                    </v-btn>
-                    <v-btn block class="conv" variant="text" prepend-icon="mdi-message">
-                        Conversation 3
-                    </v-btn>
-                </div>
-                <template v-slot:append>
-                    <div class="pa-2" style="text-align: left;">
-                        <v-btn block variant="text" style="text-align: left;" prepend-icon="mdi-logout">
-                            Logout
-                        </v-btn>
-                    </div>
-                </template>
-            </v-navigation-drawer>
-        </v-card>
-    </div>
+            <v-app-bar color="primary" prominent>
+                <v-img 
+                src="../../src/assets/ChatIDALogo.png"
+                class="chatidalogo"
+              ></v-img>
+                <v-btn variant="text" icon="mdi-logout" @click="logout"></v-btn>
+            </v-app-bar>
 
-    <div class="text-center">
-        <v-dialog v-model="dialog">
-            <v-card>
-                <v-card-text>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua.
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </div>
+           
 
+            <v-main >
+            </v-main>
+        </v-layout>
+    </v-card>
 </template>
 
+
 <script lang="ts">
+
+import axios from 'axios';
+
 export default {
     data() {
         return {
             items: [
-                { title: 'Dashboard', icon: 'mdi-view-dashboard' },
-                { title: 'Photos', icon: 'mdi-image' },
-                { title: 'About', icon: 'mdi-help-box' },
+                {
+                    title: 'Foo',
+                    value: 'foo',
+                },
+                {
+                    title: 'Bar',
+                    value: 'bar',
+                },
+                {
+                    title: 'Fizz',
+                    value: 'fizz',
+                },
+                {
+                    title: 'Buzz',
+                    value: 'buzz',
+                },
             ],
-            right: null,
-            dialog: false,
+            isLoggedOut: false,
+            drawer: false,
+            group: null,
         }
     },
+    watch: {
+      group () {
+        this.drawer = false
+      },
+    },
+
+    props: ['isLogged'],
+
+    methods: {
+
+
+        async logout() {
+            try {
+                await axios.get(`/api/logout`)
+                this.getConversations()
+                this.isLoggedOut = true;
+                this.isLogged = false;
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+        async getMessages() {
+            try {
+                const { data } = await axios.get('/api/get_messages')
+                this.messages = data
+            } catch (error) {
+                console.error(error)
+            }
+        },
+    }
 }
 </script>
 
@@ -85,5 +98,9 @@ export default {
     border: 2px;
     border-radius: 5px;
     background-color: 40414f;
+}
+
+.text-left {
+    text-align: left;
 }
 </style>

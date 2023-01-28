@@ -1,68 +1,91 @@
 <template>
+  <v-container>
+    <v-row>
+      <v-col cols="3" md="3">
+        <div class="scrollable-div">
+          <v-btn prepend-icon="mdi-plus" variant="outlined" class="conv" @click="dialog = true">
+            Add Conversation
+          </v-btn>
+          <div v-for="conversation in conversations" :key="conversation.id">
+            <v-btn class="text-left" @click="getConversationById(conversation)" prepend-icon="mdi-message"
+              variant="text">
+              {{ conversation.name }}
+              <template v-if="showDeleteIcon">
+                <v-icon @click="deleteConversation(conversation)" color="red" class="ml-2">mdi-delete</v-icon>
+              </template>
+            </v-btn>
+          </div>
+        </div>
 
-    <v-container>
-      <v-row class="rows" align="center">
-        <v-col cols="12" md="10" offset-md="2" class="cols">
-          <div v-if="isSend" class="reponse">
-            <div v-for="(item, index) in chatHistory" :key="index">
+      </v-col>
+      <v-col cols="9" md="9">
+        <v-text-field class="text-field" :loading="isRequest" v-model="message" label="Enter your message"
+          variant="solo" append-inner-icon="mdi-send" @keyup.enter="sendMessage"></v-text-field>
+
+        <div class="scrollable-div">
+          <div v-for="message in messages" :key="message.id">
+            <v-row>
+              <v-col cols="1" style="margin-top: 10px;">
+                <v-avatar color="#C2CBCD">
+                  <v-icon icon="mdi-account-circle"></v-icon>
+                </v-avatar>
+              </v-col>
+              <v-col cols="11">
+                <p class="p-message">{{ message.msg_request }}</p>
+              </v-col>
+            </v-row>
+
+            <div v-if="message.msg_response.length != 0">
               <v-row>
-                <v-col cols="1" style="margin-top: 10px;">
-                  <v-avatar color="#C2CBCD" v-if="item.isUser">
-                    <v-icon v-if="item.isUser" icon="mdi-account-circle"></v-icon>
+                <v-col cols="1" style="margin-top: 15px;">
+                  <v-avatar color="#C2CBCD">
+                    <span class="text-h5">CB</span>
                   </v-avatar>
                 </v-col>
                 <v-col cols="11">
-                  <p class="p-message" v-if="item.isUser">{{ item.message }}</p>
+                  <v-card class="card">
+                    <v-card-text class="text-card">
+                      <p>{{ message.msg_response }}</p>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
               </v-row>
-
-
-              <div v-if="!item.isUser && item.message.length != 0">
-                <v-row>
-                  <v-col cols="1" style="margin-top: 15px;">
-                    <v-avatar color="#C2CBCD" v-if="!item.isUser">
-                      <span class="text-h5">CB</span>
-                    </v-avatar>
-                  </v-col>
-                  <v-col cols="11">
-                    <v-card class="card">
-                      <v-card-text class="text-card">
-                        <p v-if="!item.isUser">{{ item.message }}</p>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-
-
-              </div>
-
-
             </div>
           </div>
+        </div>
 
-        </v-col>
-      </v-row>
-    </v-container>
-
-
-  <v-footer class="footer" app bottom fixed padless v-bind:style="{ backgroundColor: '#343541' }">
-    <v-row align="center">
-      <v-col cols="12">
-        <v-text-field class="text-field" :loading="isRequest" v-model="message" label="Enter your message"
-          variant="solo" append-inner-icon="mdi-send" @keyup.enter="sendMessage"></v-text-field>
       </v-col>
     </v-row>
-  </v-footer>
+  </v-container>
 
 
 
+  <div class="text-center">
+    <v-dialog v-model="dialog">
+      <v-card>
+        <v-card-text>
+          <v-form>
+            <v-text-field v-model="contitle" label="Titre de la conversation" aria-required="true">
+            </v-text-field>
+            <v-btn @click="addConversation">Ajouter</v-btn>
+          </v-form>
+
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </div>
 
 
 </template>
 
+
 <script >
 import axios from 'axios'
+import SideBar from './Side-bar.vue'
 export default {
+  components: {
+    SideBar
+  },
   data() {
     return {
       message: '',
@@ -70,8 +93,20 @@ export default {
       isSend: false,
       response: [],
       isRequest: false,
-      backgroundColor: '#40414f'
+      backgroundColor: '#40414f',
+      messages: [],
+      id_conv: 0,
+      showDeleteIcon: false,
+      dialog: false,
+      conversations: [],
     }
+  },
+  props:
+    ['messages_test'],
+  created() {
+
+    this.getConversations()
+    console.log("concall " + this.conversations);
   },
   methods: {
     sendMessage() {
@@ -82,39 +117,79 @@ export default {
       this.chatHistory.push({ message: this.message, isUser: true })
       this.message = ''
     },
+
     async getResponse() {
       if (this.message) {
         const { data } = await axios.post('/api/getResponse', { message: this.message });
-        if(data.response){
+        this.getMessages();
+        if (data.response) {
           this.chatHistory.push({ message: data.response, isUser: false });
-        }else{
+        } else {
           this.chatHistory.push({ message: "Désolé, je n'ai pas bien compris votre question", isUser: false });
         }
-        
+
         this.isRequest = false;
 
-      }      
+      }
 
     },
 
-    // async saveConversation() {
-    //   if (this.chatHistory && this.chatHistory.length!=0) {
-    //     axios.post('/api/saveConversation', { chatHistory: this.chatHistory })
-    //     .then(response => {
-          
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
+    async getMessages() {
+      try {
+        const { data } = await axios.get('/api/get_messages')
+        this.messages = data
+      } catch (error) {
+        console.error(error)
+      }
+    },
 
-    //   }      
+    async addConversation() {
+      try {
+        const { data } = await axios.post('/api/add_conversation', { name: this.contitle })
+        this.contitle = ''
+        this.getConversations()
+        this.dialog = false;
+      } catch (error) {
+        console.error(error)
+      }
+    },
 
-    // },
-    
+    async getConversations() {
+      try {
+        const { data } = await axios.get('/api/get_conversation')
+        this.conversations = data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async deleteConversation(conversation) {
+      try {
+        await axios.delete(`/api/delete_conversation/${conversation.id}`)
+        this.getConversations()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getConversationById(conversation) {
+      try {
+        const { data } = await axios.post('/api/get_conversation_by_id', { conv: conversation.id })
+        this.showDeleteIcon = !this.showDeleteIcon
+        this.getMessages();
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
   }
 }
 </script>
 <style>
+.scrollable-div {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
 .containt {
   display: flex;
   justify-content: center;
@@ -144,7 +219,7 @@ export default {
   background-color: #343541;
   color: white;
   border: 0px;
- 
+
 }
 
 .p-message {
@@ -158,18 +233,5 @@ export default {
   margin-top: 25%;
   margin-bottom: 30px;
 
-}
-
-.text-field {
-  color: white;
-  border: 0px;
-  border-radius: 7px;
-  padding-bottom: -30px;
-  margin-top: 10%;
-  position: fixed;
-  bottom: 0;
-  width: 90%;
-  margin-left: 30px;
-  z-index: 1;
 }
 </style>
