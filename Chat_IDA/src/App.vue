@@ -5,7 +5,7 @@
     </v-main>
     <div class="global"  v-if="isLogged">
       <div class="sidebar">
-        <Sidebar @messages_test="getMessage" v-bind:isLogged="isLogged" />
+        <Sidebar @messages_test="getMessage"  />
       </div>
       <div class="homechat">
         <Homechat />
@@ -42,7 +42,7 @@ export default {
 </script>
 <style>
 .app{
-  background-color: #BBCBCF;
+  background-color: #40414f;
 }
 
 </style>

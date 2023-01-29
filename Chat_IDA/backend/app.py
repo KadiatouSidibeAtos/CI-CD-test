@@ -37,7 +37,7 @@ with app.app_context():
    
     class Message(db.Model):
         id = db.Column(db.Integer, primary_key=True)
-        id_conv = db.Column(db.Integer, db.ForeignKey('conversation.id'), nullable=False)
+        id_conv = db.Column(db.Integer, db.ForeignKey('conversation.id'), nullable=True)
         msg_request = db.Column(db.Text(), nullable=False)
         msg_response = db.Column(db.Text(), nullable=False)
         timestamp = db.Column(db.DateTime)
@@ -59,6 +59,7 @@ with app.app_context():
 #Récuperation des conversions 
 
     @app.route('/api/get_conversation', methods=['GET'])
+    @login_required
     def get_conversations():
         conversations = Conversation.query.all()
         return jsonify([{'id': conversation.id, 'name': conversation.name, 'id_user': conversation.id_user } for conversation in conversations])
@@ -78,24 +79,24 @@ with app.app_context():
 #Récuperation des messages existants
 
     @app.route('/api/get_messages', methods=['GET'])
+    @login_required
     def get_messages():
-        print("id", id)
         id_conv= session['conv_id']
-        print("id_conv", id_conv)
         messages= Message.query.filter_by(id_conv=id_conv).all()
-        print("message", messages)
         return jsonify([{'id': message.id, 'id_conv': message.id_conv, 'msg_request': message.msg_request, 'msg_response': message.msg_response , 'timestamp': message.timestamp} for message in messages])
 
 #Récuperer une conversation à travers l'id de l'utilisateur
     @app.route('/api/get_conversation_by_id', methods=['POST'])
+    @login_required
     def get_conversation_by_id():
-        conversation = request.json['conv']
-        session['conv_id'] = conversation
-        return jsonify({'id_conv': conversation})
+        conversation_id = request.json['conv']
+        session['conv_id'] = conversation_id
+        return jsonify({'id_conv': conversation_id})
 
 
 # Ajout d'une conversation
     @app.route('/api/add_conversation', methods=['POST'])
+    @login_required
     def add_conversation():
         data = request.json['name']
         id_user = current_user.id
@@ -140,9 +141,10 @@ with app.app_context():
 
 # Deconnexion
     @app.route('/api/logout')
+    @login_required
     def logout():
         logout_user()
-        return jsonify({"message": "disconneted"}), 200
+        return jsonify({"message": "Vous avez été déconnecter"}), 200
         
    
 # Géneration de reponse et sauvegarde du message dans la base de données

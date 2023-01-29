@@ -1,16 +1,14 @@
 <template>
+     <Disconneted  v-if="!isLoggedOut"/>
     <v-card>
         <v-layout >
-            <v-app-bar color="#1F505B"  prominent class="app-bar" >
+            <v-app-bar app dark color="#343541"  >
                 <v-img 
                 src="../../src/assets/ChatIDALogo.png"
                 class="chatidalogo"
               ></v-img>
                 <v-btn color="white" variant="text" icon="mdi-logout" @click="logout"></v-btn>
             </v-app-bar>
-
-           
-
             <v-main>
             </v-main>
         </v-layout>
@@ -21,14 +19,19 @@
 <script lang="ts">
 
 import axios from 'axios';
+import Disconneted from './Disconneted.vue';
 
 export default {
+    components: {
+    Disconneted
+  },
     data() {
         return {
             
-            isLoggedOut: false,
+            isLoggedOut: true,
             drawer: false,
             group: null,
+            isLogged: true
         }
     },
     
@@ -41,21 +44,13 @@ export default {
         async logout() {
             try {
                 await axios.get(`/api/logout`)
-                this.isLoggedOut = true;
-                this.isLogged = false;
+                this.isLoggedOut = false;
+
             } catch (error) {
                 console.error(error)
             }
         },
 
-        async getMessages() {
-            try {
-                const { data } = await axios.get('/api/get_messages')
-                this.messages = data
-            } catch (error) {
-                console.error(error)
-            }
-        },
     }
 }
 </script>

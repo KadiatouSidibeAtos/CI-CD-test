@@ -7,6 +7,7 @@
             @click="dialog = true">
             Add Conversation
           </v-btn>
+          <v-divider color="white"></v-divider>
           <div v-for="conversation in conversations" :key="conversation.id">
             <v-btn color="white" class="text-left" @click="getConversationById(conversation)" prepend-icon="mdi-message"
               variant="text">
@@ -19,18 +20,19 @@
         </div>
 
       </v-col>
-      <v-col cols="9" md="9" class="chatbot" >
+      <v-col cols="9" md="9" class="chatbot">
         <v-text-field class="text-field" :loading="isRequest" v-model="message" label="Enter your message"
           variant="solo" append-inner-icon="mdi-send" @keyup.enter="sendMessage"></v-text-field>
 
-        <div class="scrollable-div-meesage">
+        <div>
+
           <div v-for="message in messages" :key="message.id">
             <v-row>
-              
+
               <v-col cols="11" style="text-align: right; ">
                 <v-card max-width="70%" class="mx-auto float-right">
                   <v-card-text>
-                    {{message.msg_request }}
+                    {{ message.msg_request }}
                   </v-card-text>
                   <v-card-subtitle>
                     {{ message.timestamp }}
@@ -49,22 +51,23 @@
               <v-row>
                 <v-col cols="1" style="margin-top: 15px;">
                   <v-avatar color="#C2CBCD">
-                    <span class="text-h5">CB</span>
+                    <v-img src="../../src/assets/ChatIDALogo.png" class="chatidalogo"></v-img>
                   </v-avatar>
                 </v-col>
-                <v-col cols="11" >
-                  <v-card  max-width="70%" class="mx-auto float-left" >
+                <v-col cols="11">
+                  <v-card max-width="70%" class="mx-auto float-left">
                     <v-card-text class="text-card">
                       {{ message.msg_response }}
                     </v-card-text>
                     <v-card-subtitle>
-                    {{ message.timestamp }}
-                  </v-card-subtitle>
+                      {{ message.timestamp }}
+                    </v-card-subtitle>
                   </v-card>
                 </v-col>
               </v-row>
             </div>
           </div>
+
         </div>
 
       </v-col>
@@ -102,47 +105,38 @@ export default {
   data() {
     return {
       message: '',
-      chatHistory: [],
-      isSend: false,
-      response: [],
       isRequest: false,
-      backgroundColor: '#40414f',
       messages: [],
-      id_conv: 0,
       showDeleteIcon: false,
       dialog: false,
       conversations: [],
     }
   },
-  props:
-    ['messages_test'],
-  created() {
-
+  mounted() {
     this.getConversations()
-    console.log("concall " + this.conversations);
+    this.getMessages();
   },
   methods: {
     sendMessage() {
+      this.question = this.message;
+      this.isSend = true;
       this.isRequest = true;
       this.getResponse();
-      this.isSend = true;
-      if (this.message.trim() === '') return
-      this.chatHistory.push({ message: this.message, isUser: true })
       this.message = ''
+
     },
 
     async getResponse() {
       if (this.message) {
-        const { data } = await axios.post('/api/getResponse', { message: this.message });
-        this.getMessages();
-        if (data.response) {
-          this.chatHistory.push({ message: data.response, isUser: false });
-        } else {
-          this.chatHistory.push({ message: "Désolé, je n'ai pas bien compris votre question", isUser: false });
+        try {
+          const { data } = await axios.post('/api/getResponse', { message: this.message });
+          this.getMessages();
+          this.isSend = false;
+          this.question = ''
+          this.isRequest = false;
+        } catch (error) {
+          console.error(error)
         }
-
-        this.isRequest = false;
-
       }
 
     },
@@ -197,28 +191,9 @@ export default {
 }
 </script>
 <style>
-.scrollable-div {
-  height: 400px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.scrollable-div-message {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
 .side {
-  background-color: #3D6B77;
+  background-color: #40414f;
   margin-top: -4px;
   margin-left: -4px;
-}
-
-.chatbot{
-  scrollbar-width: none;
-  max-width: 90%;
-}
-.chatbot::-webkit-scrollbar {
-  width: 0;
 }
 </style>
