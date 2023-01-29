@@ -1,19 +1,17 @@
 <template>
     <v-card>
-        <v-layout>
-            <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
-
-            <v-app-bar color="primary" prominent>
+        <v-layout >
+            <v-app-bar color="#1F505B"  prominent class="app-bar" >
                 <v-img 
                 src="../../src/assets/ChatIDALogo.png"
                 class="chatidalogo"
               ></v-img>
-                <v-btn variant="text" icon="mdi-logout" @click="logout"></v-btn>
+                <v-btn color="white" variant="text" icon="mdi-logout" @click="logout"></v-btn>
             </v-app-bar>
 
            
 
-            <v-main >
+            <v-main>
             </v-main>
         </v-layout>
     </v-card>
@@ -27,34 +25,13 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            items: [
-                {
-                    title: 'Foo',
-                    value: 'foo',
-                },
-                {
-                    title: 'Bar',
-                    value: 'bar',
-                },
-                {
-                    title: 'Fizz',
-                    value: 'fizz',
-                },
-                {
-                    title: 'Buzz',
-                    value: 'buzz',
-                },
-            ],
+            
             isLoggedOut: false,
             drawer: false,
             group: null,
         }
     },
-    watch: {
-      group () {
-        this.drawer = false
-      },
-    },
+    
 
     props: ['isLogged'],
 
@@ -64,7 +41,6 @@ export default {
         async logout() {
             try {
                 await axios.get(`/api/logout`)
-                this.getConversations()
                 this.isLoggedOut = true;
                 this.isLogged = false;
             } catch (error) {
@@ -85,22 +61,5 @@ export default {
 </script>
 
 <style>
-.side {
-    background-color: #343541
-}
 
-.conv {
-    margin: 5px;
-    text-align: left;
-}
-
-.conv:hover {
-    border: 2px;
-    border-radius: 5px;
-    background-color: 40414f;
-}
-
-.text-left {
-    text-align: left;
-}
 </style>

@@ -1,13 +1,14 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
-      <v-col cols="3" md="3">
+      <v-col cols="3" md="3" class="side">
         <div class="scrollable-div">
-          <v-btn prepend-icon="mdi-plus" variant="outlined" class="conv" @click="dialog = true">
+          <v-btn prepend-icon="mdi-plus" color="white" variant="outlined" style="margin-bottom: 5px;"
+            @click="dialog = true">
             Add Conversation
           </v-btn>
           <div v-for="conversation in conversations" :key="conversation.id">
-            <v-btn class="text-left" @click="getConversationById(conversation)" prepend-icon="mdi-message"
+            <v-btn color="white" class="text-left" @click="getConversationById(conversation)" prepend-icon="mdi-message"
               variant="text">
               {{ conversation.name }}
               <template v-if="showDeleteIcon">
@@ -18,20 +19,29 @@
         </div>
 
       </v-col>
-      <v-col cols="9" md="9">
+      <v-col cols="9" md="9" class="chatbot" >
         <v-text-field class="text-field" :loading="isRequest" v-model="message" label="Enter your message"
           variant="solo" append-inner-icon="mdi-send" @keyup.enter="sendMessage"></v-text-field>
 
-        <div class="scrollable-div">
+        <div class="scrollable-div-meesage">
           <div v-for="message in messages" :key="message.id">
             <v-row>
+              
+              <v-col cols="11" style="text-align: right; ">
+                <v-card max-width="70%" class="mx-auto float-right">
+                  <v-card-text>
+                    {{message.msg_request }}
+                  </v-card-text>
+                  <v-card-subtitle>
+                    {{ message.timestamp }}
+                  </v-card-subtitle>
+                </v-card>
+                <!-- <p class="p-message">{{ message.msg_request }}</p> -->
+              </v-col>
               <v-col cols="1" style="margin-top: 10px;">
                 <v-avatar color="#C2CBCD">
                   <v-icon icon="mdi-account-circle"></v-icon>
                 </v-avatar>
-              </v-col>
-              <v-col cols="11">
-                <p class="p-message">{{ message.msg_request }}</p>
               </v-col>
             </v-row>
 
@@ -42,11 +52,14 @@
                     <span class="text-h5">CB</span>
                   </v-avatar>
                 </v-col>
-                <v-col cols="11">
-                  <v-card class="card">
+                <v-col cols="11" >
+                  <v-card  max-width="70%" class="mx-auto float-left" >
                     <v-card-text class="text-card">
-                      <p>{{ message.msg_response }}</p>
+                      {{ message.msg_response }}
                     </v-card-text>
+                    <v-card-subtitle>
+                    {{ message.timestamp }}
+                  </v-card-subtitle>
                   </v-card>
                 </v-col>
               </v-row>
@@ -185,53 +198,27 @@ export default {
 </script>
 <style>
 .scrollable-div {
+  height: 400px;
   max-height: 400px;
   overflow-y: auto;
 }
 
-
-.containt {
-  display: flex;
-  justify-content: center;
+.scrollable-div-message {
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-.card-title {
-  margin-right: 20%;
-  margin-left: -25%;
-  width: 20%;
-  margin-bottom: 30px;
+.side {
+  background-color: #3D6B77;
+  margin-top: -4px;
+  margin-left: -4px;
 }
 
-.reponse {
-  margin-top: 20px;
-  margin-right: 20%;
-  margin-left: -10%;
-
-
+.chatbot{
+  scrollbar-width: none;
+  max-width: 90%;
 }
-
-.card {
-  margin-top: 20px;
-  width: 100%;
-}
-
-.text-card {
-  background-color: #343541;
-  color: white;
-  border: 0px;
-
-}
-
-.p-message {
-  margin-top: 20px;
-  color: white;
-}
-
-.footer {
-  display: flex;
-  justify-content: center;
-  margin-top: 25%;
-  margin-bottom: 30px;
-
+.chatbot::-webkit-scrollbar {
+  width: 0;
 }
 </style>

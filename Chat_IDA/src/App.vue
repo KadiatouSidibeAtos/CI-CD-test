@@ -1,5 +1,5 @@
 <template>
-  <v-app >
+  <v-app class="app">
     <v-main v-if="!isLogged" >
       <Login  @isLogged="changeLogStatus"/>
     </v-main>
@@ -41,5 +41,8 @@ export default {
 }
 </script>
 <style>
+.app{
+  background-color: #BBCBCF;
+}
 
 </style>
