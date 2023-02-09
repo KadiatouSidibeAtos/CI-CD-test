@@ -10,7 +10,7 @@ jobs:
     - name: Check if requirements.txt exists
       id: check_file
       run: |
-        if [ -f ../Chat_IDA/backend/requirements.txt ]; then
+        if [ -f requirements.txt ]; then
           echo "Requirements file exists."
         else
           echo "Requirements file does not exist."
