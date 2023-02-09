@@ -1,0 +1,22 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check if requirements.txt exists
+      id: check_file
+      run: |
+        if [ -f requirements.txt ]; then
+          echo "Requirements file exists."
+        else
+          echo "Requirements file does not exist."
+        fi
+
+    - name: Install dependencies
+      if: steps.check_file.outputs.status == 'success'
+      run: |
+        pip install -r requirements.txt
