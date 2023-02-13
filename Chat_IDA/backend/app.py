@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask import Flask, render_template, request, jsonify, session, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+import redis
 
 app = Flask(__name__, static_folder='./dist/assets',  template_folder='./dist')
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
