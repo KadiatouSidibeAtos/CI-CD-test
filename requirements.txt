@@ -1,6 +1,6 @@
 transformers
 flask-Cors
-flask-sqlalchemy
+Flask-SQLAlchemy
 torch
 flask-login
 redis
