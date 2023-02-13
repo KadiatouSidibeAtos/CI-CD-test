@@ -3,3 +3,4 @@ flask-Cors
 flask-sqlalchemy
 torch
 flask-login
+redis
