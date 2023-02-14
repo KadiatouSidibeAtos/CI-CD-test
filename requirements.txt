@@ -1,5 +1,5 @@
 transformers
-flask-Cors
 torch
+flask-Cors
 flask-login
 redis
