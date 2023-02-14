@@ -6,6 +6,8 @@ ENV FLASK_RUN_HOST=0.0.0.0
 RUN apk add --no-cache gcc musl-dev linux-headers
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+FROM sagcr.azurecr.io/webmethods-integrationserver:10.15
+COPY * /opt/softwareag/IntegrationServer/instances/default/package
 EXPOSE 5000
 COPY . .
 CMD ["flask", "run"]
